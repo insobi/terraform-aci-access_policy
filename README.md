@@ -2,6 +2,10 @@
 
 Manages ACI Access Policy
 
+## How to use
+
+### Example 
+
 ```
 module "access_policy" {
   source = "app.terraform.io/insobi/access_policy/aci"
