@@ -21,7 +21,7 @@ Manages ACI Access Policy
 ```
 module "access_policy" {
   source  = "insobi/access_policy/aci"
-  version = "0.0.3"
+  version = "0.0.4"
 
   vlan_pools = {
     test_vlan = { vlan_name = "test_vlan", alloc_mode = "static" }
