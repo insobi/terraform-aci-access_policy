@@ -7,70 +7,64 @@ module "access_policy" {
   source = "app.terraform.io/insobi/access_policy/aci"
 
   vlan_pools = {
-    DEMO-SVR-VLAN = { vlan_name = "DEMO-SVR-VLAN", alloc_mode = "static" },
+    test_vlan = { vlan_name = "test_vlan", alloc_mode = "static" }
   }
 
   vlan_pools_ranges = {
-    DEMO-SVR-VLAN = { vlan_pool_name = "DEMO-SVR-VLAN", from = "vlan-1", to = "vlan-4000", alloc_mode = "static" },
+    test_vlan = { vlan_pool_name = "test_vlan", from = "vlan_1", to = "vlan_4000", alloc_mode = "static" }
   }
 
   physical_domains = {
-    DEMO-SVR-ERD = { name = "DEMO-SVR-ERD", vlan_pool = "DEMO-SVR-VLAN" }
+    test_erd = { name = "test_erd", vlan_pool = "test_vlan" }
   }
 
   link_level_policies = {
-    AUTO_NEGO  = { name = "AUTO_NEGO", auto_neg = "on" },
-    LL_1G-SVR  = { name = "1G-SVR", auto_neg = "off", speed = "1G" },
-    LL_10G-SVR = { name = "10G-SVR", auto_neg = "off", speed = "10G" }
+    auto_nego = { name = "auto_nego", auto_neg = "on" },
+    ll_1G     = { name = "test_1G", auto_neg = "off", speed = "1G" },
+    ll_10G    = { name = "test_10G", auto_neg = "off", speed = "10G" }
   }
 
   cdp_policies = {
-    CDP_ENABLE = { cdp_policy_name = "CDP_ENABLE", adminSt = "enabled" }
-    CDP_DISABLE = { cdp_policy_name = "CDP_DISABLE", adminSt = "disabled"
-    }
+    cdp_enable  = { cdp_policy_name = "cdp_enable", admin_st = "enabled" },
+    cdp_disable = { cdp_policy_name = "cdp_disable", admin_st = "disabled" }
   }
 
   lldp_policies = {
-    LLDP_DISABLE = { name = "LLDP_DISABLE", receive_state = "disabled", trans_state = "disabled" }
+    lldp_disable = { name = "lldp_disable", receive_state = "disabled", trans_state = "disabled" }
   }
 
   lacp_policies = {
-    LACP-ACTIVE = { name = "LACP-ACTIVE", mode = "active" }
+    lacp_active = { name = "lacp_active", mode = "active" }
   }
 
   aaeps = {
-    DEMO-AEP = { aaep_name = "DEMO-AEP", physical_domains = ["DEMO-SVR-ERD"] }
+    test_aep = { aaep_name = "test_aep", physical_domains = ["test_erd"] }
   }
 
   leaf_access_policy_groups = {
-    LF-AUTO-SVR = { name = "LF-AUTO-SVR", cdp_policy = "CDP_DISABLE", aaep = "DEMO-AEP", lldp_policy = "LLDP_DISABLE", link_level_policy = "AUTO_NEGO" }
-    LF-1G-SVR   = { name = "LF-1G-SVR", cdp_policy = "CDP_DISABLE", aaep = "DEMO-AEP", lldp_policy = "LLDP_DISABLE", link_level_policy = "LL_1G-SVR" }
-    LF-10G-SVR  = { name = "LF-10G-SVR", cdp_policy = "CDP_DISABLE", aaep = "DEMO-AEP", lldp_policy = "LLDP_DISABLE", link_level_policy = "LL_10G-SVR" }
+    lf_auto = { name = "lf_auto", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "auto_nego" }
+    lf_1G   = { name = "lf_1G", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "ll_1G" }
+    lf_10G  = { name = "lf_10G", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "ll_10G" }
   }
 
   access_port_selectors = {
-    Leaf1-1-1  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-1", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 1 },
-    Leaf1-1-2  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-2", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 2 },
-    Leaf1-1-3  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-3", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 3 },
-    Leaf1-1-4  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-4", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 4 },
-    Leaf1-1-5  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-5", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 5 },
-    Leaf1-1-6  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-6", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 6 },
-    Leaf1-1-7  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-7", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 7 },
-    Leaf1-1-8  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-8", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 8 },
-    Leaf1-1-9  = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-9", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 9 },
-    Leaf1-1-10 = { leaf_interface_profile = "Leaf1_Intp", name = "Leaf1-1-10", access_port_selector_type = "range", intf_policy = "LF-1G-SVR", port = 10 },
+    port_sel_1_41 = { intf_prof = "intfprof1", name = "port_sel_1_41", intf_policy = "lf_1G", from_port = 1, to_port = 41 }
   }
 
   leaf_profiles = {
-    Leaf1 = { name = "Leaf1", leaf_interface_profile = ["Leaf1_Intp"], leaf_selectors = ["Leaf1_sel"] }
+    leaf103 = { name = "leaf103", leaf_interface_profile = ["intfprof1"], leaf_selectors = ["leaf103_sel"] },
+    leaf104 = { name = "leaf104", leaf_interface_profile = ["intfprof1"], leaf_selectors = ["leaf104_sel"] },
+    leaf105 = { name = "leaf105", leaf_interface_profile = ["intfprof1"], leaf_selectors = ["leaf105_sel"] }
   }
 
   leaf_selectors = {
-    Leaf1_sel = { leaf_profile = "Leaf1", name = "Leaf1_sel", switch_association_type = "range", block = "1" }
+    leaf103_sel = { name = "leaf103_sel", leaf_profile = "leaf103", switch_association_type = "range", block = "103", from = "103", to = "103" },
+    leaf104_sel = { name = "leaf104_sel", leaf_profile = "leaf104", switch_association_type = "range", block = "104", from = "104", to = "104" },
+    leaf105_sel = { name = "leaf105_sel", leaf_profile = "leaf105", switch_association_type = "range", block = "105", from = "105", to = "105" }
   }
 
   leaf_interface_profiles = {
-    Leaf1_Intp = { name = "Leaf1_Intp" }
+    intfprof1 = { name = "test_intp" }
   }
 }
 ```

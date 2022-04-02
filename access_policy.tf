@@ -33,7 +33,7 @@ resource "aci_fabric_if_pol" "link_level_policies" {
 resource "aci_cdp_interface_policy" "aci_cdp_interface_policies" {
   for_each = var.cdp_policies
   name     = each.value.cdp_policy_name
-  admin_st = each.value.adminSt
+  admin_st = each.value.admin_st
 }
 
 resource "aci_lldp_interface_policy" "aci_lldp_policies" {
@@ -103,6 +103,6 @@ resource "aci_node_block" "node_blocks" {
   for_each              = var.leaf_selectors
   switch_association_dn = aci_leaf_selector.leaf_selectors[each.value.name].id
   name                  = each.value.block
-  from_                 = each.value.block
-  to_                   = each.value.block
+  from_                 = each.value.from
+  to_                   = each.value.to
 }
