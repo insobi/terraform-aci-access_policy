@@ -1,8 +1,10 @@
 # terraform-aci-access_policy
 
+Manages ACI Access Policy
+
 ```
 module "access_policy" {
-  source = "./access_policy"
+  source = "app.terraform.io/insobi/access_policy/aci"
 
   vlan_pools = {
     DEMO-SVR-VLAN = { vlan_name = "DEMO-SVR-VLAN", alloc_mode = "static" },
