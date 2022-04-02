@@ -20,7 +20,7 @@ Manages ACI Access Policy
 
 ```
 module "access_policy" {
-  source  = "app.terraform.io/insobi/access_policy/aci"
+  source  = "insobi/access_policy/aci"
   version = "0.0.3"
 
   vlan_pools = {
@@ -59,8 +59,8 @@ module "access_policy" {
   }
 
   leaf_access_policy_groups = {
-    lf_auto = { name = "lf_auto", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "auto_nego" }
-    lf_1G   = { name = "lf_1G", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "ll_1G" }
+    lf_auto = { name = "lf_auto", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "auto_nego" },
+    lf_1G   = { name = "lf_1G", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "ll_1G" },
     lf_10G  = { name = "lf_10G", cdp_policy = "cdp_disable", aaep = "test_aep", lldp_policy = "lldp_disable", link_level_policy = "ll_10G" }
   }
 
