@@ -2,13 +2,26 @@
 
 Manages ACI Access Policy
 
+- VLAN
+- Physical domain
+- Link level policy
+- CDP policy
+- LLDP policy
+- LACP policy
+- AAEP
+- Leaf access policy group
+- Access port selector
+- Leaf profile
+- Leaf interface profile
+
 ## How to use
 
 ### Example 
 
 ```
 module "access_policy" {
-  source = "app.terraform.io/insobi/access_policy/aci"
+  source  = "app.terraform.io/insobi/access_policy/aci"
+  version = "0.0.3"
 
   vlan_pools = {
     test_vlan = { vlan_name = "test_vlan", alloc_mode = "static" }
@@ -29,8 +42,8 @@ module "access_policy" {
   }
 
   cdp_policies = {
-    cdp_enable  = { cdp_policy_name = "cdp_enable", admin_st = "enabled" },
-    cdp_disable = { cdp_policy_name = "cdp_disable", admin_st = "disabled" }
+    cdp_enable  = { name = "cdp_enable", admin_st = "enabled" },
+    cdp_disable = { name = "cdp_disable", admin_st = "disabled" }
   }
 
   lldp_policies = {

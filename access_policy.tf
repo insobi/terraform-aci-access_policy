@@ -32,7 +32,7 @@ resource "aci_fabric_if_pol" "link_level_policies" {
 
 resource "aci_cdp_interface_policy" "aci_cdp_interface_policies" {
   for_each = var.cdp_policies
-  name     = each.value.cdp_policy_name
+  name     = each.value.name
   admin_st = each.value.admin_st
 }
 
