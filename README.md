@@ -28,7 +28,7 @@ module "access_policy" {
   }
   
   vlan_pools_ranges = {
-    range1 = { vlan_pool_name = "demo-vlan", from = "vlan_2500", to = "vlan_2600", alloc_mode = "static" }
+    range1 = { vlan_pool_name = "demo-vlan", from = "vlan-2500", to = "vlan-2600", alloc_mode = "static" }
   }
   
   physical_domains = {
