@@ -8,7 +8,7 @@ resource "aci_vlan_pool" "aci_vlan_pools" {
 
 resource "aci_ranges" "aci_vlan_pools_ranges" {
   for_each     = var.vlan_pools_ranges
-  vlan_pool_dn = aci_vlan_pool.aci_vlan_pools[each.value.vlan_pool_name].id
+  vlan_pool_dn = element([for item in aci_vlan_pool.aci_vlan_pools : item.id if item.name == each.value.vlan_pool_name], 0)
   from         = contains(keys(each.value), "from") ? each.value.from : null
   to           = contains(keys(each.value), "to") ? each.value.to : null
   alloc_mode   = contains(keys(each.value), "alloc_mode") ? each.value.alloc_mode : null
@@ -19,7 +19,7 @@ resource "aci_ranges" "aci_vlan_pools_ranges" {
 resource "aci_physical_domain" "aci_physical_domains" {
   for_each                  = var.physical_domains
   name                      = each.value.name
-  relation_infra_rs_vlan_ns = contains(keys(each.value), "vlan_pool") ? aci_vlan_pool.aci_vlan_pools[each.value.vlan_pool].id : null
+  relation_infra_rs_vlan_ns = contains(keys(each.value), "vlan_pool") ? element([for item in aci_vlan_pool.aci_vlan_pools : item.id if item.name == each.value.vlan_pool], 0) : null
 }
 
 resource "aci_fabric_if_pol" "link_level_policies" {
@@ -38,7 +38,7 @@ resource "aci_cdp_interface_policy" "aci_cdp_interface_policies" {
 
 resource "aci_lldp_interface_policy" "aci_lldp_policies" {
   for_each    = var.lldp_policies
-  name        = each.key
+  name        = each.value.name
   admin_rx_st = each.value.receive_state
   admin_tx_st = each.value.trans_state
 }
@@ -51,16 +51,17 @@ resource "aci_lacp_policy" "lacp_policies" {
 
 resource "aci_attachable_access_entity_profile" "aci_aaeps" {
   for_each                = var.aaeps
-  name                    = each.value.aaep_name
-  relation_infra_rs_dom_p = [for domain in each.value.physical_domains : aci_physical_domain.aci_physical_domains[domain].id]
+  name                    = each.value.name
+  relation_infra_rs_dom_p = [for domain in each.value.physical_domains : element([for item in aci_physical_domain.aci_physical_domains : item.id if item.name == domain], 0)]
 }
 
 resource "aci_access_port_selector" "aci_access_port_selectors" {
   for_each                       = var.access_port_selectors
-  leaf_interface_profile_dn      = aci_leaf_interface_profile.aci_leaf_interface_profiles[each.value.intf_prof].id
+  leaf_interface_profile_dn      = element([for item in aci_leaf_interface_profile.aci_leaf_interface_profiles : item.id if item.name == each.value.intf_prof], 0)
   name                           = each.value.name
   access_port_selector_type      = contains(keys(each.value), "access_port_selector_type") ? each.value.access_port_selector_type : "range"
-  relation_infra_rs_acc_base_grp = contains(keys(each.value), "intf_policy") ? aci_leaf_access_port_policy_group.aci_leaf_access_port_policy_groups[each.value.intf_policy].id : null
+  relation_infra_rs_acc_base_grp = contains(keys(each.value), "intf_policy") ? element([for item in aci_leaf_access_port_policy_group.aci_leaf_access_port_policy_groups : item.id if item.name == each.value.intf_policy], 0) : null
+  
 }
 
 resource "aci_access_port_block" "aci_access_port_blocks" {
@@ -75,10 +76,10 @@ resource "aci_access_port_block" "aci_access_port_blocks" {
 resource "aci_leaf_access_port_policy_group" "aci_leaf_access_port_policy_groups" {
   for_each                      = var.leaf_access_policy_groups
   name                          = each.value.name
-  relation_infra_rs_att_ent_p   = contains(keys(each.value), "aaep") ? aci_attachable_access_entity_profile.aci_aaeps[each.value.aaep].id : null
-  relation_infra_rs_cdp_if_pol  = contains(keys(each.value), "cdp_policy") ? aci_cdp_interface_policy.aci_cdp_interface_policies[each.value.cdp_policy].id : null
-  relation_infra_rs_lldp_if_pol = contains(keys(each.value), "lldp_policy") ? aci_lldp_interface_policy.aci_lldp_policies[each.value.lldp_policy].id : null
-  relation_infra_rs_h_if_pol    = contains(keys(each.value), "link_level_policy") ? aci_fabric_if_pol.link_level_policies[each.value.link_level_policy].id : null
+  relation_infra_rs_att_ent_p   = contains(keys(each.value), "aaep") ? element([for item in aci_attachable_access_entity_profile.aci_aaeps : item.id if item.name == each.value.aaep], 0) : null
+  relation_infra_rs_cdp_if_pol  = contains(keys(each.value), "cdp_policy") ? element([for item in aci_cdp_interface_policy.aci_cdp_interface_policies : item.id if item.name == each.value.cdp_policy], 0) : null
+  relation_infra_rs_lldp_if_pol = contains(keys(each.value), "lldp_policy") ? element([for item in aci_lldp_interface_policy.aci_lldp_policies : item.id if item.name == each.value.lldp_policy], 0) : null
+  relation_infra_rs_h_if_pol    = contains(keys(each.value), "link_level_policy") ? element([for item in aci_fabric_if_pol.link_level_policies : item.id if item.name == each.value.link_level_policy], 0) : null
 }
 
 resource "aci_leaf_interface_profile" "aci_leaf_interface_profiles" {
@@ -89,19 +90,20 @@ resource "aci_leaf_interface_profile" "aci_leaf_interface_profiles" {
 resource "aci_leaf_profile" "aci_leaf_profiles" {
   for_each                     = var.leaf_profiles
   name                         = each.value.name
-  relation_infra_rs_acc_port_p = [for profile in each.value.leaf_interface_profile : aci_leaf_interface_profile.aci_leaf_interface_profiles[profile].id]
+  relation_infra_rs_acc_port_p = [for profile in each.value.leaf_interface_profile : element([for item in aci_leaf_interface_profile.aci_leaf_interface_profiles : item.id if item.name == profile], 0)]
+  #
 }
 
 resource "aci_leaf_selector" "leaf_selectors" {
   for_each                = var.leaf_selectors
-  leaf_profile_dn         = aci_leaf_profile.aci_leaf_profiles[each.value.leaf_profile].id
+  leaf_profile_dn         = element([for item in aci_leaf_profile.aci_leaf_profiles : item.id if item.name == each.value.leaf_profile], 0)
   name                    = each.value.name
   switch_association_type = each.value.switch_association_type
 }
 
 resource "aci_node_block" "node_blocks" {
   for_each              = var.leaf_selectors
-  switch_association_dn = aci_leaf_selector.leaf_selectors[each.value.name].id
+  switch_association_dn = element([for item in aci_leaf_selector.leaf_selectors : item.id if item.name == each.value.name], 0)
   name                  = each.value.block
   from_                 = each.value.from
   to_                   = each.value.to
